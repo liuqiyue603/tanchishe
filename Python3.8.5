@@ -1,1 +1,153 @@
-https://pan.baidu.com/s/1wwIFqtmNAmPptHWvvKx-nA
+def sj(shuru,yuqi):
+
+	a = 2
+
+	#隐含层数
+
+	b = [[1,1],[1,1],[1]]
+
+	#b列表
+
+	h = [[0],[0,0],[0,0],[0]]
+
+	#节点列表
+
+	w = [[1,1],[1,1,1,1],[1,1]]
+
+	#w列表
+
+	e = [[0,0],[0,0],[0]]
+
+	#导数列表
+
+	h[0][0] = shuru
+
+	w2=w
+
+	b2=b
+
+	w3=w
+
+	b3=b
+
+	times=0
+
+	for o in range(a+1):
+
+		for q in range(len(h[o + 1])):
+
+			for p in range(len(h[o])):
+
+				h[o+1][q] += h[o][p]*w[q][p+q*len(h[o+1])]
+
+			h[o+1][q] += b[o][q]
+
+			if h[o+1][q] > 0:
+
+				e[o][q] = h[o+1][q]
+
+			else:
+
+				h[o+1][q] = 0
+
+				e[o][q] = 0
+
+	loss = (yuqi-h[len(h)-1][0])*(yuqi-h[len(h)-1][0])
+
+	#不太完善
+
+	while loss > 1:
+
+		for x in range(a+1):
+
+			B = []
+
+			for p in range(a+1-x):
+
+				lis = []
+
+				for q in range(len(h[p+x+1])):
+
+					lis += [0]
+
+				B += [lis]
+
+			for i in range(len(w[x])+len(h[x+1])):
+
+				for p in range(len(B)):
+
+					for q in range(len(B[p])):
+
+						B[p][q] = 0
+
+				#范围
+
+				if i < len(w[x]):
+
+					p = i//len(h[x])
+
+					B[0][p] = h[x][i%len(h[x])]*e[x][p]
+
+				else :
+
+					p = (i-len(w[x]))//len(h[x])
+
+					B[0][p] = e[x][p]
+
+				for y in range(a-x):
+
+					#范围
+
+					for z in range(len(h[x+y+2])):
+
+						for t in range(len(h[x+y+1])):
+
+							B[y+1][z] += B[y][t]*w[x+y+1][t+len(h[x+y+1])*z]
+
+						B[y+1][z] *= e[x+y+1][z-1]
+
+						#范围
+
+				alpha = 0
+
+				for t in range(len(B[len(B)-1])):
+
+					alpha += (h[len(h)-1][t]-yuqi)*B[len(B)-1][t]
+
+					alpha *= 2/(t+1)
+
+				if i < len(w[x]):
+
+					w[x][i]-=alpha*0.4
+
+				else:
+
+					b[x][i-len(w[x])]-=alpha*0.4
+
+			w3[x]=w[x]
+
+			b3[x]=b[x]
+
+			w[x]=w2[x]
+
+			b[x]=b2[x]
+
+			w2[x]=w3[x]
+
+			b2[x]=b3[x]
+
+			print(B)
+
+		w=w2
+
+		b=b2
+
+		times+=1
+
+		if times // 100 ==1:
+
+			#print(loss)
+
+			times = 0
+
+a = sj(2,4)
